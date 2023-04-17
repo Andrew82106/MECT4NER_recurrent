@@ -444,6 +444,7 @@ if args.status == 'train':
                       device=device, callbacks=callbacks, dev_batch_size=args.test_batch,
                       test_use_tqdm=False,
                       print_every=5,
-                      check_code_level=-1)
+                      check_code_level=-1,
+                      )
 
     trainer.train()
