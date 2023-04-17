@@ -23,7 +23,7 @@ def char2radical(c):
     if c in char_info.keys():
         c_info = char_info[c]
         # print('\t'.join([c] + c_info).strip(), file=new_file)
-        return list(c_info[3])
+        return list(c_info)
     return ['○']
 
 

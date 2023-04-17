@@ -1,4 +1,4 @@
-rootLoc = "/Users/andrewlee/Desktop/Projects/hmn/MECT4CNER-master/MECT4NER_NEW"
+rootLoc = "/Users/andrewlee/Desktop/Projects/hmn/MECT4CNER-master/MECT4NER_NEW/MECT4CNER"
 old_Loc = "/home/ws"
 
 

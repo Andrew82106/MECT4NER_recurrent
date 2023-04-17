@@ -169,12 +169,15 @@ if args.debug:
     # args.dataset = 'toy'
     pass
 
+"""
 if args.device != 'cpu':
     assert args.device.isdigit()
     device = torch.device('cuda:{}'.format(args.device))
 else:
     device = torch.device('cpu')
+"""
 
+device = None
 refresh_data = False
 # import random
 # print('**'*12,random.random,'**'*12)
