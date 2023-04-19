@@ -139,3 +139,46 @@ class MECTNER(nn.Module):
             result = {'pred': pred}
 
             return result
+
+    def forward1(self, lattice, bigrams, seq_len, lex_num, pos_s, pos_e, target):
+        batch_size = lattice.size(0)
+        max_seq_len_and_lex_num = lattice.size(1)
+        max_seq_len = bigrams.size(1)
+
+        raw_embed = self.lattice_embed(lattice)
+
+        char_mask = seq_len_to_mask(seq_len, max_len=max_seq_len_and_lex_num).bool()
+        char = lattice.masked_fill_(~char_mask, 0)
+        components_embed = self.components_embed(char)
+        components_embed.masked_fill_(~(char_mask).unsqueeze(-1), 0)
+        components_embed = self.components_proj(components_embed)
+        bigrams_embed = self.bigram_embed(bigrams)
+        bigrams_embed = torch.cat([bigrams_embed,
+                                   torch.zeros(size=[batch_size, max_seq_len_and_lex_num - max_seq_len,
+                                                     self.bigram_size]).to(bigrams_embed)], dim=1)
+        raw_embed_char = torch.cat([raw_embed, bigrams_embed], dim=-1)
+
+        raw_embed_char = self.embed_dropout(raw_embed_char)
+        raw_embed = self.gaz_dropout(raw_embed)
+
+        embed_char = self.char_proj(raw_embed_char)
+        char_mask = seq_len_to_mask(seq_len, max_len=max_seq_len_and_lex_num).bool()
+        embed_char.masked_fill_(~(char_mask.unsqueeze(-1)), 0)
+
+        embed_lex = self.lex_proj(raw_embed)
+        lex_mask = (seq_len_to_mask(seq_len + lex_num).bool() ^ char_mask.bool())
+        embed_lex.masked_fill_(~lex_mask.unsqueeze(-1), 0)
+
+        assert char_mask.size(1) == lex_mask.size(1)
+        embedding = embed_char + embed_lex
+
+        char_encoded = self.char_encoder(components_embed, embedding, embedding, seq_len, lex_num=lex_num, pos_s=pos_s,
+                                         pos_e=pos_e)
+        radical_encoded = self.radical_encoder(embedding, components_embed, components_embed, seq_len,
+                                               lex_num=lex_num, pos_s=pos_s, pos_e=pos_e)
+
+        fusion = torch.cat([radical_encoded, char_encoded], dim=-1)
+        output = self.output_dropout(fusion)
+        output = output[:, :max_seq_len, :]
+
+        return output

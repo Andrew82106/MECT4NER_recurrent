@@ -1,0 +1,7 @@
+2023/04/18 23:03:27 - utils - [INFO] - Read cache from cache/msra_trainClip:Truebgminfreq_1char_min_freq_1word_min_freq_1only_train_min_freqTruenumber_norm0load_dataset_seed100.
+2023/04/18 23:03:27 - utils - [INFO] - Read cache from cache/yj.
+2023/04/18 23:03:51 - StaticEmbedding - [INFO] - Found 698668 out of 698670 words in the pre-training embedding.
+2023/04/18 23:03:59 - StaticEmbedding - [INFO] - Found 116726 out of 116809 words in the pre-training embedding.
+2023/04/18 23:04:08 - utils - [INFO] - Save cache to cache/msra_lattice_only_train:False_trainClip:True_norm_num:0char_min_freq1bigram_min_freq1word_min_freq1only_train_min_freqTruenumber_norm0lexicon_yjload_dataset_seed100.
+2023/04/18 23:04:08 - CNNRadicalLevelEmbedding - [INFO] - Start constructing character vocabulary.
+2023/04/18 23:04:09 - CNNRadicalLevelEmbedding - [INFO] - In total, there are 7265 distinct characters.

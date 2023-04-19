@@ -1,0 +1,6 @@
+2023/04/18 23:02:33 - StaticEmbedding - [INFO] - Found 4775 out of 4858 words in the pre-training embedding.
+2023/04/18 23:02:53 - StaticEmbedding - [INFO] - Found 291203 out of 317361 words in the pre-training embedding.
+2023/04/18 23:02:56 - utils - [INFO] - Save cache to cache/msra_trainClip:Truebgminfreq_1char_min_freq_1word_min_freq_1only_train_min_freqTruenumber_norm0load_dataset_seed100.
+2023/04/18 23:02:56 - utils - [INFO] - Read cache from cache/yj.
+2023/04/18 23:03:05 - dataset - [ERROR] - Exception happens at the `23362`th instance.
+2023/04/18 23:03:05 - vocabulary - [ERROR] - When processing the `0` dataset, the following error occurred:
