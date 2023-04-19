@@ -34,8 +34,9 @@ class AdaptSelfAttention(nn.Module):
         else:
             self.dropout = MyDropout(attn_dropout)
 
-
         if dataset == 'weibo':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 320, 320), requires_grad=True)
+        if dataset == 'dark_data':
             self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 320, 320), requires_grad=True)
         if dataset == 'msra':
             self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 310, 310), requires_grad=True)

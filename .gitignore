@@ -1,3 +1,5 @@
 MECT4CNER/data
 MECT4CNER/NER
 MECT4CNER/cache
+.DS_Store
+*/.DS_Store

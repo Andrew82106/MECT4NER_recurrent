@@ -1,0 +1,9 @@
+2023/04/19 16:49:52 - StaticEmbedding - [INFO] - Found 4869 out of 5136 words in the pre-training embedding.
+2023/04/19 16:50:10 - StaticEmbedding - [INFO] - Found 206503 out of 244313 words in the pre-training embedding.
+2023/04/19 16:50:17 - utils - [INFO] - Save cache to cache/dark.
+2023/04/19 16:50:17 - utils - [INFO] - Read cache from cache/yj.
+2023/04/19 16:51:18 - StaticEmbedding - [INFO] - Found 698668 out of 698670 words in the pre-training embedding.
+2023/04/19 16:51:26 - StaticEmbedding - [INFO] - Found 81313 out of 81579 words in the pre-training embedding.
+2023/04/19 16:52:03 - utils - [INFO] - Save cache to cache/dark_data_lattice_only_train:False_trainClip:True_norm_num:0char_min_freq1bigram_min_freq1word_min_freq1only_train_min_freqTruenumber_norm0lexicon_yjload_dataset_seed100.
+2023/04/19 16:52:03 - CNNRadicalLevelEmbedding - [INFO] - Start constructing character vocabulary.
+2023/04/19 16:52:04 - CNNRadicalLevelEmbedding - [INFO] - In total, there are 6147 distinct characters.

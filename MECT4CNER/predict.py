@@ -144,7 +144,7 @@ parser.add_argument('--embed_dropout_pos', default='0')
 parser.add_argument('--abs_pos_fusion_func', default='nonlinear_add',
                     choices=['add', 'concat', 'nonlinear_concat', 'nonlinear_add', 'concat_nonlinear', 'add_nonlinear'])
 
-parser.add_argument('--dataset', default='weibo', help='weibo|resume|ontonotes|msra')
+parser.add_argument('--dataset', default='dark_data', help='weibo|resume|ontonotes|msra')
 parser.add_argument('--label', default='all', help='ne|nm|all')
 
 args = parser.parse_args()
@@ -239,6 +239,14 @@ elif args.dataset == 'msra':
                                                    bigram_min_freq=args.bigram_min_freq,
                                                    only_train_min_freq=args.only_train_min_freq
                                                    )
+elif args.dataset == 'dark_data':
+    datasets, vocabs, embeddings = load_dark_data(dark_data_path, yangjie_rich_pretrain_unigram_path,
+                                                   yangjie_rich_pretrain_bigram_path,
+                                                   index_token=False,
+                                                   char_min_freq=args.char_min_freq,
+                                                   bigram_min_freq=args.bigram_min_freq,
+                                                   only_train_min_freq=args.only_train_min_freq
+                                                   )
 
 if args.gaz_dropout < 0:
     args.gaz_dropout = args.embed_dropout
@@ -275,6 +283,19 @@ elif args.dataset == 'ontonotes':
     args.momentum = 0.9
     args.update_every = 1
     args.epoch = 100
+elif args.dataset == 'dark_data':
+    args.ff_dropout = 0.2
+    args.ff_dropout_2 = 0.4
+    args.gaz_dropout = 0.5
+    args.head_dim = 16
+    args.ff = 384
+    args.hidden = 128
+    args.radical_dropout = 0.2
+    args.warmup = 0.3
+    args.lr = 0.0018
+    args.components_embed_lr_rate = 0.0014
+    args.momentum = 0.9
+    args.epoch = 50
 elif args.dataset == 'msra':
     args.ff_dropout = 0.1
     args.ff_dropout_2 = 0.1
@@ -401,7 +422,7 @@ with torch.no_grad():
     print_info('{}init pram{}'.format('*' * 15, '*' * 15))
 
 loss = LossInForward()
-encoding_type = 'bmeso'
+encoding_type = 'bio'
 if args.dataset == 'weibo' or args.dataset == 'tc':
     encoding_type = 'bio'
 
@@ -463,7 +484,8 @@ if args.status == 'test':  # 如果是做测试
                     batch_size=1)
     res = tester.test()
     print(res)"""
-    model = torch.load("/Users/andrewlee/Desktop/Projects/hmn/MECT4CNER-master/MECT4NER_NEW/MECT4CNER/model_data/best_MECTNER_f_2023-04-18-00-11-59")  # 加载训练好的模型
+
+    """model = torch.load("/Users/andrewlee/Desktop/Projects/hmn/MECT4CNER-master/MECT4NER_NEW/MECT4CNER/model_data/best_MECTNER_f_2023-04-18-00-11-59")  # 加载训练好的模型
     device = None
     model.to(device)
     predictor = Predictor(model)
@@ -472,4 +494,16 @@ if args.status == 'test':  # 如果是做测试
     res_lst = [a.tolist()[0] for a in res['pred']]
     raw_lst = [i for i in datasets['train']['raw_chars'].content]
     print(res_lst)
-    print(len(res_lst), len(raw_lst))
+    print(len(res_lst), len(raw_lst))"""
+    model = torch.load(
+        "/Users/andrewlee/Desktop/Projects/hmn/MECT4CNER-master/MECT4NER_NEW/MECT4CNER/model_data/best_MECTNER_f_2023-04-18-00-11-59")  # 加载训练好的模型
+    device = None
+    model.to(device)
+    predictor = Predictor(model)
+    test_label_list = predictor.predict(datasets['test'][:1])['pred'][0]  # 预测结果
+    test_raw_char = datasets['test'][:1]['raw_chars'][0]     # 原始文字
+    print(test_label_list, len(test_label_list[0]))
+    print(test_raw_char, len(test_raw_char))
+
+    """for d in vocabs['label']:  # 可以通过这个可以得到label对应的数字
+        print(d)"""

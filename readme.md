@@ -4,9 +4,7 @@ MECT4NER代码：https://github.com/CoderMusou/MECT4CNER
 
 MECT4NER论文：https://arxiv.org/abs/2107.05418
 
-
 # changeLogs
-
 
 - StaticEmbedding.py lines 309-313:
 
@@ -43,6 +41,35 @@ MECT4NER论文：https://arxiv.org/abs/2107.05418
             pred, path = self.crf.viterbi_decode(pred, mask)
             result = {'pred': pred}
 
-            return output
+            return {'pred': output}
             # 修改上面这行，从而在非训练模式下将output输出。output为未经过线性层的raw数据。
+```
+
+- AdaptSelfAttention.py lines 37-43:
+
+```python
+# from
+        if dataset == 'weibo':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 320, 320), requires_grad=True)
+        if dataset == 'msra':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 310, 310), requires_grad=True)
+        if dataset == 'resume':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 344, 344), requires_grad=True)
+        if dataset == 'ontonotes':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 477, 477), requires_grad=True)
+        if dataset == 'tc':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 398, 398), requires_grad=True)
+# to 
+        if dataset == 'weibo':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 320, 320), requires_grad=True)
+        if dataset == 'dark_data':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 320, 320), requires_grad=True)
+        if dataset == 'msra':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 310, 310), requires_grad=True)
+        if dataset == 'resume':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 344, 344), requires_grad=True)
+        if dataset == 'ontonotes':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 477, 477), requires_grad=True)
+        if dataset == 'tc':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 398, 398), requires_grad=True)
 ```
