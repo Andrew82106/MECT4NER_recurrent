@@ -415,4 +415,5 @@ for d in vocabs['label']:
 python Utils/preprocess.py
 python predict.py --dataset weibo
 """
+
 exit(0)
