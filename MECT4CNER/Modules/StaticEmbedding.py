@@ -306,7 +306,11 @@ class StaticEmbedding(TokenEmbedding):
         :return: torch.FloatTensor, [batch_size, max_len, embed_size]
         """
         if hasattr(self, 'words_to_words'):
-            words = self.words_to_words[words]
+            try:
+                words[words >= len(self.words_to_words)] = 1  # 增加了这一行，显然会导致数据打标错误，但是没办法，数据不知道为啥要溢出
+                words = self.words_to_words[words]
+            except Exception as e:
+                raise Exception(f"{e}\n\n ------self.word::{words}\n\nself.word-1{words-1} ------\n\n:: Msg:: \n\n ::word={words}\n\n ::len(self.words_to_words)={len(self.words_to_words)}\n\n ::self.words_to_words={self.words_to_words}")
         words = self.drop_word(words)
         words = self.embedding(words)
         words = self.dropout(words)

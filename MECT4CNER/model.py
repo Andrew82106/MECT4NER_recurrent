@@ -138,7 +138,7 @@ class MECTNER(nn.Module):
             pred, path = self.crf.viterbi_decode(pred, mask)
             result = {'pred': pred}
 
-            return result, output
+            return {'pred': output}
             # 修改上面这行，从而在非训练模式下将output输出。output为未经过线性层的raw数据。
 
     def forward1(self, lattice, bigrams, seq_len, lex_num, pos_s, pos_e, target):

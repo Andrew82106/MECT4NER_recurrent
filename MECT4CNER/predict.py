@@ -1,10 +1,12 @@
 import fitlog
+from fastNLP.core.predictor import Predictor
 
 from Modules.CNNRadicalLevelEmbedding import CNNRadicalLevelEmbedding
 from Utils.load_data import *
 from Utils.paths import *
 from Utils.utils import norm_static_embedding, MyFitlogCallback, print_info, get_peking_time
 from model import MECTNER
+from fastNLP.core.tester import Tester
 
 use_fitlog = False
 if not use_fitlog:
@@ -42,7 +44,7 @@ import sys
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--status', default='train', choices=['train'])
+parser.add_argument('--status', default='test', choices=['test', 'train'])
 parser.add_argument('--msg', default='_')
 parser.add_argument('--train_clip', default=False, help='是不是要把train的char长度限制在200以内')
 parser.add_argument('--device', default='0')
@@ -398,22 +400,76 @@ with torch.no_grad():
                 exit(1208)
     print_info('{}init pram{}'.format('*' * 15, '*' * 15))
 
-model_path = '/Users/andrewlee/Desktop/Projects/hmn/MECT4CNER-master/MECT4NER_NEW/MECT4CNER/model_data/best_MECTNER_f_2023-04-18-00-11-59'
-states = torch.load(model_path).state_dict()
-model.load_state_dict(states, strict=False)
+loss = LossInForward()
+encoding_type = 'bmeso'
+if args.dataset == 'weibo' or args.dataset == 'tc':
+    encoding_type = 'bio'
 
-new_model = model
-from fastNLP.core.predictor import Predictor
-predictor = Predictor(model)   # 这里的model是加载权重之后的model
+f1_metric = SpanFPreRecMetric(vocabs['label'], pred='pred', target='target', seq_len='seq_len',
+                              encoding_type=encoding_type)
+acc_metric = AccuracyMetric(pred='pred', target='target', seq_len='seq_len', )
+acc_metric.set_metric_name('label_acc')
+metrics = [
+    f1_metric,
+    acc_metric
+]
 
-test_label_list = predictor.predict(datasets['test'][:1])['pred'][0]  # 预测结果
-test_raw_char = datasets['test'][:1]['raw_chars'][0]     # 原始文字
-for d in vocabs['label']:
-    print(d)
+bigram_embedding_param = list(model.bigram_embed.parameters())
+gaz_embedding_param = list(model.lattice_embed.parameters())
+components_embed_param = list(model.components_embed.parameters())
+embedding_param = bigram_embedding_param
+embedding_param = embedding_param + gaz_embedding_param
+embedding_param_ids = list(map(id, embedding_param + components_embed_param))
+non_embedding_param = list(filter(lambda x: id(x) not in embedding_param_ids, model.parameters()))
 
-"""
-python Utils/preprocess.py
-python predict.py --dataset weibo
-"""
+param_ = [{'params': non_embedding_param},
+          {'params': embedding_param, 'lr': args.lr * args.embed_lr_rate},
+          {'params': components_embed_param, 'lr': args.components_embed_lr_rate}]
 
-exit(0)
+optimizer = optim.SGD(param_, lr=args.lr, momentum=args.momentum,
+                      weight_decay=args.weight_decay)
+
+if 'msra' in args.dataset:
+    datasets['dev'] = datasets['test']
+
+fitlog_evaluate_dataset = {'test': datasets['test']}
+evaluate_callback = MyFitlogCallback(fitlog_evaluate_dataset, verbose=1)
+lrschedule_callback = LRScheduler(lr_scheduler=LambdaLR(optimizer, lambda epoch: 1 / (1 + 0.05 * epoch)))
+clip_callback = GradientClipCallback(clip_type='value', clip_value=5)
+
+callbacks = [evaluate_callback, lrschedule_callback, clip_callback, WarmupCallback(warmup=args.warmup)]
+
+if args.status == 'train':
+    trainer = Trainer(datasets['train'], model, optimizer, loss,
+                      args.batch // args.update_every,
+                      update_every=args.update_every,
+                      n_epochs=args.epoch,
+                      dev_data=datasets['dev'],
+                      metrics=metrics,
+                      device=device, callbacks=callbacks, dev_batch_size=args.test_batch,
+                      test_use_tqdm=False,
+                      print_every=5,
+                      check_code_level=-1,
+                      )
+
+    trainer.train()
+if args.status == 'test':  # 如果是做测试
+    # 因为这里使用的是fastNLP ，故加载模型的方法有些区别。直接load就可以了
+    """model = torch.load(
+        "/Users/andrewlee/Desktop/Projects/hmn/MECT4CNER-master/MECT4NER_NEW/MECT4CNER/model_data/best_MECTNER_f_2023-04-18-00-11-59")  # 加载训练好的模型
+    tester = Tester(datasets['train'], model,
+                    metrics=metrics,
+                    device=device,
+                    batch_size=1)
+    res = tester.test()
+    print(res)"""
+    model = torch.load("/Users/andrewlee/Desktop/Projects/hmn/MECT4CNER-master/MECT4NER_NEW/MECT4CNER/model_data/best_MECTNER_f_2023-04-18-00-11-59")  # 加载训练好的模型
+    device = None
+    model.to(device)
+    predictor = Predictor(model)
+    res = predictor.predict(datasets['train'])
+    print("GET RES")
+    res_lst = [a.tolist()[0] for a in res['pred']]
+    raw_lst = [i for i in datasets['train']['raw_chars'].content]
+    print(res_lst)
+    print(len(res_lst), len(raw_lst))
