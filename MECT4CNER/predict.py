@@ -476,25 +476,6 @@ if args.status == 'train':
     trainer.train()
 if args.status == 'test':  # 如果是做测试
     # 因为这里使用的是fastNLP ，故加载模型的方法有些区别。直接load就可以了
-    """model = torch.load(
-        "/Users/andrewlee/Desktop/Projects/hmn/MECT4CNER-master/MECT4NER_NEW/MECT4CNER/model_data/best_MECTNER_f_2023-04-18-00-11-59")  # 加载训练好的模型
-    tester = Tester(datasets['train'], model,
-                    metrics=metrics,
-                    device=device,
-                    batch_size=1)
-    res = tester.test()
-    print(res)"""
-
-    """model = torch.load("/Users/andrewlee/Desktop/Projects/hmn/MECT4CNER-master/MECT4NER_NEW/MECT4CNER/model_data/best_MECTNER_f_2023-04-18-00-11-59")  # 加载训练好的模型
-    device = None
-    model.to(device)
-    predictor = Predictor(model)
-    res = predictor.predict(datasets['train'])
-    print("GET RES")
-    res_lst = [a.tolist()[0] for a in res['pred']]
-    raw_lst = [i for i in datasets['train']['raw_chars'].content]
-    print(res_lst)
-    print(len(res_lst), len(raw_lst))"""
     model = torch.load(
         "/Users/andrewlee/Desktop/Projects/hmn/MECT4CNER-master/MECT4NER_NEW/MECT4CNER/model_data/best_MECTNER_f_2023-04-18-00-11-59")  # 加载训练好的模型
     device = None
@@ -502,8 +483,8 @@ if args.status == 'test':  # 如果是做测试
     predictor = Predictor(model)
     test_label_list = predictor.predict(datasets['test'][:1])['pred'][0]  # 预测结果
     test_raw_char = datasets['test'][:1]['raw_chars'][0]     # 原始文字
-    print(test_label_list, len(test_label_list[0]))
-    print(test_raw_char, len(test_raw_char))
+    print(list(test_label_list[0][1]), len(test_label_list[0]))
+    print(test_raw_char[1], len(test_raw_char))
 
     """for d in vocabs['label']:  # 可以通过这个可以得到label对应的数字
         print(d)"""

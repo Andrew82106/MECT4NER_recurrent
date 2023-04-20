@@ -1,0 +1,5 @@
+2023/04/20 15:13:04 - utils - [INFO] - Read cache from cache/dark.
+2023/04/20 15:13:04 - utils - [INFO] - Read cache from cache/yj.
+2023/04/20 15:13:34 - utils - [INFO] - Read cache from cache/dark_data_lattice_only_train:False_trainClip:True_norm_num:0char_min_freq1bigram_min_freq1word_min_freq1only_train_min_freqTruenumber_norm0lexicon_yjload_dataset_seed100.
+2023/04/20 15:13:36 - CNNRadicalLevelEmbedding - [INFO] - Start constructing character vocabulary.
+2023/04/20 15:13:36 - CNNRadicalLevelEmbedding - [INFO] - In total, there are 6147 distinct characters.
