@@ -15,12 +15,7 @@ def word_embedding(vec_list, word):
     :return: 词向量，一个numpy数组
     """
     # 将向量列表转换为BERT模型需要的格式
-    tokens = [tokenizer.cls_token] + [tokenizer.convert_tokens_to_ids(word) for word in word.split()] + [tokenizer.sep_token]
-    for i in range(len(tokens)):
-        if tokens[i] == "[CLS]":
-            tokens[i] = 0
-        elif tokens[i] == "[SEP]":
-            tokens[i] = 1
+    tokens = [tokenizer.convert_tokens_to_ids(tokenizer.cls_token)] + [tokenizer.convert_tokens_to_ids(word) for word in word.split()] + [tokenizer.convert_tokens_to_ids(tokenizer.sep_token)]
     input_ids = torch.tensor([tokens])
     vec_list = torch.tensor(vec_list)
     attention_mask = torch.ones_like(input_ids)
@@ -130,7 +125,7 @@ if __name__ == '__main__':
          1.5560985, 0.02646609, -0.13469572, -0.005531829, 0.4988335, 1.2065842, -0.9802121, 0.8486424, 0.1552389,
          -0.6410084, -0.17314443, 0.923242, 0.439028, -1.4787264, 1.5933621, -0.8103145]
     ]
-    word = "长"
+    word = "长河"
     # 假设有一个包含句子中每个汉字向量的列表vec_list和一个单词字符串word
     word_vec = word_embedding(vec_list, word)
     print(word_vec, len(word_vec))
