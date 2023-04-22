@@ -73,3 +73,42 @@ MECT4NER论文：https://arxiv.org/abs/2107.05418
         if dataset == 'tc':
             self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 398, 398), requires_grad=True)
 ```
+
+- path.py line 19:
+
+```python
+# add:
+dark_data_path = '/home/ws/NER/DarkData'.replace(old_Loc, rootLoc)
+```
+
+- 添加了BertWordEncoding.py，用于在MECT4CNER的输出后套一层处理，来得到语句中的词向量
+- 在predict.py中添加了字向量输出，结合BertWordEncoding.py来获得文本中的词向量
+- 在NER数据集中添加了darkData数据集，用于打标
+- PosFusionEmbedding.py line 17-29:
+
+```python
+# from
+    def forward(self, pos_s, pos_e):
+        batch = pos_s.size(0)
+
+        pos_ss = pos_s.unsqueeze(-1) - pos_s.unsqueeze(-2)
+        pos_ee = pos_e.unsqueeze(-1) - pos_e.unsqueeze(-2)
+
+        max_seq_len = pos_s.size(1)
+        pe_ss = self.pe_ss[(pos_ss).view(-1) + self.max_seq_len].view(size=[batch, max_seq_len, max_seq_len, -1])
+        pe_ee = self.pe_ee[(pos_ee).view(-1) + self.max_seq_len].view(size=[batch, max_seq_len, max_seq_len, -1])
+# to
+    def forward(self, pos_s, pos_e):
+        batch = pos_s.size(0)
+
+        pos_ss = pos_s.unsqueeze(-1) - pos_s.unsqueeze(-2)
+        pos_ee = pos_e.unsqueeze(-1) - pos_e.unsqueeze(-2)
+
+        max_seq_len = pos_s.size(1)
+        tensor_ss = (pos_ss).view(-1) + self.max_seq_len
+        tensor_ee = (pos_ee).view(-1) + self.max_seq_len
+        tensor_ss[tensor_ss >= len(self.pe_ss)] = len(self.pe_ss) - 2
+        tensor_ee[tensor_ee >= len(self.pe_ee)] = len(self.pe_ee) - 2
+        pe_ss = self.pe_ss[tensor_ss].view(size=[batch, max_seq_len, max_seq_len, -1])
+        pe_ee = self.pe_ee[tensor_ee].view(size=[batch, max_seq_len, max_seq_len, -1])
+```

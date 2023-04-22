@@ -1,4 +1,5 @@
 import fitlog
+import tqdm
 from fastNLP.core.predictor import Predictor
 
 from Modules.CNNRadicalLevelEmbedding import CNNRadicalLevelEmbedding
@@ -7,6 +8,9 @@ from Utils.paths import *
 from Utils.utils import norm_static_embedding, MyFitlogCallback, print_info, get_peking_time
 from model import MECTNER
 from fastNLP.core.tester import Tester
+import jieba
+from BertWordEncoding import word_embedding
+import pickle
 
 use_fitlog = False
 if not use_fitlog:
@@ -486,5 +490,25 @@ if args.status == 'test':  # 如果是做测试
     print(list(test_label_list[0][1]), len(test_label_list[0]))
     print(test_raw_char[1], len(test_raw_char))
 
-    """for d in vocabs['label']:  # 可以通过这个可以得到label对应的数字
-        print(d)"""
+    # start processing
+    res = {}
+    all_sentences = datasets['test']['raw_chars'].content
+    # predictor.predict(datasets['test'][i:i+1])['pred'][0]  -> prediction of sentence i
+    drop_cnt = 0
+    cnt = 0
+    for sentence_id in tqdm.tqdm(range(len(all_sentences))):
+        cnt += 1
+        predict_res = predictor.predict(datasets['test'][sentence_id:sentence_id+1])['pred'][0][0]
+        print("predictRES:", predict_res)
+        sentence = all_sentences[sentence_id]
+        sentence_vector = [list(predict_res[i]) for i in range(len(sentence))]
+        # print(len(sentence), len(predict_res))
+        # 使用jieba分词
+        seg_list = jieba.lcut(''.join(sentence))
+        # 输出分词结果
+        for i in seg_list:
+            res[i + f"sentence_id={sentence_id}"] = word_embedding(sentence_vector, i)
+
+    with open('dark_data_word_vector.pickle', 'wb') as f:
+        pickle.dump(res, f)
+    print(f"all:{cnt} dropped:{drop_cnt} dropped_percentage:{100*drop_cnt/cnt}")
