@@ -151,7 +151,10 @@ parser.add_argument('--abs_pos_fusion_func', default='nonlinear_add',
 parser.add_argument('--dataset', default='dark_data', help='weibo|resume|ontonotes|msra')
 parser.add_argument('--label', default='all', help='ne|nm|all')
 
+parser.add_argument('--stage', default=0, type=int)
 args = parser.parse_args()
+print(f"stage:{args.stage}")
+exit(0)
 if args.ff_dropout_2 < 0:
     args.ff_dropout_2 = args.ff_dropout
 
@@ -486,7 +489,7 @@ if args.status == 'test':  # 如果是做测试
     model.to(device)
     predictor = Predictor(model)
     test_label_list = predictor.predict(datasets['test'][:1])['pred'][0]  # 预测结果
-    test_raw_char = datasets['test'][:1]['raw_chars'][0]     # 原始文字
+    test_raw_char = datasets['test'][:1]['raw_chars'][0]  # 原始文字
     print(list(test_label_list[0][1]), len(test_label_list[0]))
     print(test_raw_char[1], len(test_raw_char))
 
@@ -496,19 +499,23 @@ if args.status == 'test':  # 如果是做测试
     # predictor.predict(datasets['test'][i:i+1])['pred'][0]  -> prediction of sentence i
     drop_cnt = 0
     cnt = 0
-    for sentence_id in tqdm.tqdm(range(len(all_sentences))):
+    for sentence_id in tqdm.tqdm(range(args.stage, min(args.stage + 1200, len(all_sentences)))):
         cnt += 1
-        predict_res = predictor.predict(datasets['test'][sentence_id:sentence_id+1])['pred'][0][0]
-        print("predictRES:", predict_res)
-        sentence = all_sentences[sentence_id]
-        sentence_vector = [list(predict_res[i]) for i in range(len(sentence))]
-        # print(len(sentence), len(predict_res))
-        # 使用jieba分词
-        seg_list = jieba.lcut(''.join(sentence))
-        # 输出分词结果
-        for i in seg_list:
-            res[i + f"sentence_id={sentence_id}"] = word_embedding(sentence_vector, i)
-
-    with open('dark_data_word_vector.pickle', 'wb') as f:
+        try:
+            predict_res = predictor.predict(datasets['test'][sentence_id:sentence_id + 1])['pred'][0][0]
+            # print("predictRES:", predict_res)
+            sentence = all_sentences[sentence_id]
+            sentence_vector = [list(predict_res[i]) for i in range(len(sentence))]
+            # print(len(sentence), len(predict_res))
+            # 使用jieba分词
+            seg_list = jieba.lcut(''.join(sentence))
+            # 输出分词结果
+            for i in seg_list:
+                res[i + f"sentence_id={sentence_id}"] = word_embedding(sentence_vector, i)
+        except:
+            drop_cnt += 1
+            continue
+    with open(f'wordVector/dark_data_word_vector_cnt={args.stage + cnt}.pickle', 'wb') as f:
         pickle.dump(res, f)
-    print(f"all:{cnt} dropped:{drop_cnt} dropped_percentage:{100*drop_cnt/cnt}")
+    print(f"file saved: dark_data_word_vector_cnt={cnt}.pickle")
+    print(f"all:{cnt} dropped:{drop_cnt} dropped_percentage:{100 * drop_cnt / cnt}")
