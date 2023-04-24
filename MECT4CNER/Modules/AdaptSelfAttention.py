@@ -38,6 +38,10 @@ class AdaptSelfAttention(nn.Module):
             self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 320, 320), requires_grad=True)
         if dataset == 'dark_data':
             self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 320, 320), requires_grad=True)
+        if dataset == 'thu':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 320, 320), requires_grad=True)
+        if dataset == 'wiki':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 320, 320), requires_grad=True)
         if dataset == 'msra':
             self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 310, 310), requires_grad=True)
         if dataset == 'resume':

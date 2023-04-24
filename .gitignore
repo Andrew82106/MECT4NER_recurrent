@@ -1,5 +1,14 @@
 MECT4CNER/data
-MECT4CNER/NER
+MECT4CNER/NER/DarkData/input_darkdata.bmes
+MECT4CNER/NER/DarkData/input_darkdata_raw.txt
+MECT4CNER/NER/MSRA
+MECT4CNER/NER/People's Daily
+MECT4CNER/NER/ResumeNER
+MECT4CNER/NER/THU/input_THUCNews.txt
+MECT4CNER/NER/THU/THUCNews.bmes
+MECT4CNER/NER/Weibo
+MECT4CNER/NER/wiki/input_wiki.txt
+MECT4CNER/NER/wiki/wiki.bmes
 MECT4CNER/cache
 .DS_Store
 */.DS_Store

@@ -64,6 +64,8 @@ MECT4NER论文：https://arxiv.org/abs/2107.05418
             self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 320, 320), requires_grad=True)
         if dataset == 'dark_data':
             self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 320, 320), requires_grad=True)
+        if dataset == 'thu':
+            self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 320, 320), requires_grad=True)
         if dataset == 'msra':
             self.randomAttention = nn.Parameter(torch.empty(1, self.num_heads, 310, 310), requires_grad=True)
         if dataset == 'resume':
@@ -79,6 +81,7 @@ MECT4NER论文：https://arxiv.org/abs/2107.05418
 ```python
 # add:
 dark_data_path = '/home/ws/NER/DarkData'.replace(old_Loc, rootLoc)
+thu_data_path = '/home/ws/NER/THU'.replace(old_Loc, rootLoc)
 ```
 
 - 添加了BertWordEncoding.py，用于在MECT4CNER的输出后套一层处理，来得到语句中的词向量

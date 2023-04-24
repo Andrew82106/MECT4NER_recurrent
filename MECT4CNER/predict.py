@@ -148,13 +148,13 @@ parser.add_argument('--embed_dropout_pos', default='0')
 parser.add_argument('--abs_pos_fusion_func', default='nonlinear_add',
                     choices=['add', 'concat', 'nonlinear_concat', 'nonlinear_add', 'concat_nonlinear', 'add_nonlinear'])
 
-parser.add_argument('--dataset', default='dark_data', help='weibo|resume|ontonotes|msra')
+parser.add_argument('--dataset', default='wiki', help='weibo|resume|ontonotes|msra')
 parser.add_argument('--label', default='all', help='ne|nm|all')
 
 parser.add_argument('--stage', default=0, type=int)
 args = parser.parse_args()
 print(f"stage:{args.stage}")
-exit(0)
+print(f"dataset:{args.dataset}")
 if args.ff_dropout_2 < 0:
     args.ff_dropout_2 = args.ff_dropout
 
@@ -248,12 +248,30 @@ elif args.dataset == 'msra':
                                                    )
 elif args.dataset == 'dark_data':
     datasets, vocabs, embeddings = load_dark_data(dark_data_path, yangjie_rich_pretrain_unigram_path,
-                                                   yangjie_rich_pretrain_bigram_path,
-                                                   index_token=False,
-                                                   char_min_freq=args.char_min_freq,
-                                                   bigram_min_freq=args.bigram_min_freq,
-                                                   only_train_min_freq=args.only_train_min_freq
-                                                   )
+                                                  yangjie_rich_pretrain_bigram_path,
+                                                  index_token=False,
+                                                  char_min_freq=args.char_min_freq,
+                                                  bigram_min_freq=args.bigram_min_freq,
+                                                  only_train_min_freq=args.only_train_min_freq
+                                                  )
+
+elif args.dataset == 'thu':
+    datasets, vocabs, embeddings = load_thu_data(thu_data_path, yangjie_rich_pretrain_unigram_path,
+                                                 yangjie_rich_pretrain_bigram_path,
+                                                 index_token=False,
+                                                 char_min_freq=args.char_min_freq,
+                                                 bigram_min_freq=args.bigram_min_freq,
+                                                 only_train_min_freq=args.only_train_min_freq
+                                                 )
+
+elif args.dataset == 'wiki':
+    datasets, vocabs, embeddings = load_wiki_data(wiki_data_path, yangjie_rich_pretrain_unigram_path,
+                                                  yangjie_rich_pretrain_bigram_path,
+                                                  index_token=False,
+                                                  char_min_freq=args.char_min_freq,
+                                                  bigram_min_freq=args.bigram_min_freq,
+                                                  only_train_min_freq=args.only_train_min_freq
+                                                  )
 
 if args.gaz_dropout < 0:
     args.gaz_dropout = args.embed_dropout
@@ -317,6 +335,19 @@ elif args.dataset == 'msra':
     args.update_every = 1
     args.epoch = 100
 elif args.dataset == 'weibo':
+    args.ff_dropout = 0.2
+    args.ff_dropout_2 = 0.4
+    args.gaz_dropout = 0.5
+    args.head_dim = 16
+    args.ff = 384
+    args.hidden = 128
+    args.radical_dropout = 0.2
+    args.warmup = 0.3
+    args.lr = 0.0018
+    args.components_embed_lr_rate = 0.0014
+    args.momentum = 0.9
+    args.epoch = 50
+else:
     args.ff_dropout = 0.2
     args.ff_dropout_2 = 0.4
     args.gaz_dropout = 0.5
