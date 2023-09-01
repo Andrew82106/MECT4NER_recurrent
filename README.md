@@ -1,6 +1,6 @@
 # 基于MECT4CNER修改的版本
 
-原仓库：[MECT4CNER_Repo](https://github.com/Andrew82106/MECT4NER_recurrent)
+原仓库：[MECT4CNER_Repo](https://github.com/CoderMusou/MECT4CNER)
 
 ## dev log
 
