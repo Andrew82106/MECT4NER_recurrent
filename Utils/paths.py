@@ -1,6 +1,6 @@
 import os
 
-rootPth = "/Users/andrewlee/Desktop/Projects/hmn/MECT_Related/MECT4CNER"
+rootPth = "/home/MECT4CNER"
 embeddings = os.path.join(rootPth, "datasets/embeddings")
 charinfo = os.path.join(rootPth, "datasets/charinfo")
 NER = os.path.join(rootPth, "datasets/NER")

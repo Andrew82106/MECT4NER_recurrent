@@ -120,9 +120,7 @@ parser.add_argument('--four_pos_fusion', default='ff_two', choices=['ff', 'attn'
 
 parser.add_argument('--four_pos_fusion_shared', default=True, help='是不是要共享4个位置融合之后形成的pos')
 
-# parser.add_argument('--rel_pos_scale',default=2,help='在lattice且用相对位置编码时，由于中间过程消耗显存过大，'
-#                                                  '所以可以使4个位置的初始embedding size缩小，'
-#                                                  '最后融合时回到正常的hidden size即可')
+# parser.add_argument('--rel_pos_scale',default=2,help='在lattice且用相对位置编码时，由于中间过程消耗显存过大，所以可以使4个位置的初始embedding size缩小，最后融合时回到正常的hidden size即可')  # modify this to decrease the use of gpu memory
 
 parser.add_argument('--pre', default='')
 parser.add_argument('--post', default='nda')
@@ -175,7 +173,7 @@ if args.device != 'cpu':
 else:
     device = torch.device('cpu')
 
-device = None  # in order to run on macbook
+# device = None  # in order to run on macbook
 refresh_data = False
 # import random
 # print('**'*12,random.random,'**'*12)
@@ -465,6 +463,13 @@ lrschedule_callback = LRScheduler(lr_scheduler=LambdaLR(optimizer, lambda epoch:
 clip_callback = GradientClipCallback(clip_type='value', clip_value=5)
 
 callbacks = [evaluate_callback, lrschedule_callback, clip_callback, WarmupCallback(warmup=args.warmup)]
+# 在 main.py 中的模型定义之前添加以下代码
+"""
+if torch.cuda.device_count() > 1:
+    print("使用多个GPU...")
+    model = nn.DataParallel(model)
+    device = None
+"""
 
 if args.status == 'train':
     print("start training")

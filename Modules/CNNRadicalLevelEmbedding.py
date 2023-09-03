@@ -78,7 +78,7 @@ def _construct_radical_vocab_from_vocab(char_vocab: Vocabulary, min_freq: int = 
     radical_vocab = Vocabulary(min_freq=min_freq)
     for char, index in char_vocab:
         if not char_vocab._is_word_no_create_entry(char):
-            print(f"origin word:{char} char2radical:{char2radical(char)}")
+            # print(f"origin word:{char} char2radical:{char2radical(char)}")
             radical_vocab.add_word_lst(char2radical(char))
     if include_word_start_end:
         radical_vocab.add_word_lst(['<bow>', '<eow>'])
