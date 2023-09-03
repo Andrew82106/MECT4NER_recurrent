@@ -127,6 +127,8 @@ class MECTNER(nn.Module):
         radical_encoded = self.radical_encoder(embedding, components_embed, components_embed, seq_len,
                                                lex_num=lex_num, pos_s=pos_s, pos_e=pos_e)
 
+        # char_encoded和radical_encoded就是论文中CrossTransformer module的Transformer encoder实现
+
         fusion = torch.cat([radical_encoded, char_encoded], dim=-1)
         output = self.output_dropout(fusion)
         output = output[:, :max_seq_len, :]

@@ -23,6 +23,7 @@ with open(radical_path, 'r') as f:
 
 # new_file = open('new_radical.txt', 'w')
 
+
 def contains_eng(text):
     for i in text:
         if i in "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM":
@@ -44,6 +45,7 @@ def searchRadical(c):
         if i < len(res) - 1:
             result_list.append(" ")
     return result_list
+
 
 def char2radical(c):
     if c =='<unk>':

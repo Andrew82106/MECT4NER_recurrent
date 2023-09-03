@@ -106,6 +106,30 @@ def get_embedding(max_seq_len, embedding_dim, padding_idx=None, rel_pos_init=0):
         emb[padding_idx, :] = 0
     return emb
 
+"""
+这段代码用于生成位置嵌入（Positional Embeddings），通常用于自注意力模型（比如Transformer）中，以帮助模型捕捉序列中不同位置的信息。位置嵌入在模型中与词嵌入（Word Embeddings）一起使用，以使模型能够理解输入序列中的词语或标记在序列中的位置。
+
+具体来说，这段代码的功能如下：
+
+1. `num_embeddings = 2*max_seq_len+1`：计算位置嵌入的总数量。这里的 `max_seq_len` 表示序列的最大长度，而 `num_embeddings` 表示要生成的位置嵌入的数量。通常，位置嵌入会包括负数、零以及正数位置的编码，因此总数量是原始序列长度的两倍再加一。
+
+2. `half_dim = embedding_dim // 2`：计算位置嵌入的维度的一半。这是因为通常位置嵌入是一个包含正弦和余弦函数值的矩阵，而这两个函数分别被赋予了一半的维度。
+
+3. 计算正弦和余弦函数的值，并按照指定的初始化方式（`rel_pos_init`）进行初始化。具体来说：
+   - 如果 `rel_pos_init` 为0，那么从 `-max_len` 到 `max_len` 的相对位置编码矩阵就按 `0` 到 `2 * max_len` 来初始化。
+   - 如果 `rel_pos_init` 为1，那么从 `-max_len` 到 `max_len` 的相对位置编码矩阵就按 `-max_len` 到 `max_len` 来初始化。
+
+4. 将正弦和余弦函数的值连接在一起，得到位置嵌入矩阵。这个矩阵的形状是 `(num_embeddings, embedding_dim)`，其中每一行代表一个不同位置的嵌入向量。
+
+5. 如果 `embedding_dim` 是奇数，那么在嵌入矩阵的末尾添加一个零列，以确保嵌入向量的维度与指定的 `embedding_dim` 一致。
+
+6. 如果 `padding_idx` 参数不为 `None`，则将指定位置的嵌入向量置为零。这通常用于处理序列中的填充标记。
+
+7. 最后，返回生成的位置嵌入矩阵。
+
+总之，这段代码用于生成用于表示序列位置信息的位置嵌入矩阵，这些位置嵌入可以与词嵌入一起输入到深度学习模型中，以帮助模型理解输入序列中不同位置的关系和重要性。
+"""
+
 
 def get_crf_zero_init(label_size, include_start_end_trans=False, allowed_transitions=None,
                  initial_method=None):

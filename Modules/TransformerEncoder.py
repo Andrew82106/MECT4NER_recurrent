@@ -43,6 +43,11 @@ class TransformerEncoder(nn.Module):
 
     def forward(self, query, key, value, seq_len, lex_num=0, pos_s=None, pos_e=None):
         rel_pos_embedding = self.four_pos_fusion_embedding(pos_s, pos_e)
+        # four_pos_fusion_embedding应该就是FLAT论文中Relative Position Encoding of Spans这一部分的实现了
+        # 传入pos_s和pos_e，计算出这句话中所有词语的位置关系
+        # 什么是span？文中说：Each span corresponds to a character or latent word and its position in the original lattice.
+        # 可以理解为，span就是一段话的分词结果中的一个个"词组"。
+        # 比如原文：重庆人民医院。这个的分词结果就是：[重，庆，人，民，医，院，重庆，重庆人，人民，民医，医院]，也就是11个span
 
         output = self.transformer_layer(query, key, value, seq_len, lex_num=lex_num,
                                         rel_pos_embedding=rel_pos_embedding)

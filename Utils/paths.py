@@ -1,9 +1,9 @@
 import os
 
-
-embeddings = "/home/MECT4CNER/datasets/embeddings"
-charinfo = "/home/MECT4CNER/datasets/charinfo"
-NER = "/home/MECT4CNER/datasets/NER"
+rootPth = "/Users/andrewlee/Desktop/Projects/hmn/MECT_Related/MECT4CNER"
+embeddings = os.path.join(rootPth, "datasets/embeddings")
+charinfo = os.path.join(rootPth, "datasets/charinfo")
+NER = os.path.join(rootPth, "datasets/NER")
 
 
 yangjie_rich_pretrain_unigram_path = os.path.join(embeddings, 'gigaword_chn.all.a2b.uni.ite50.vec')
@@ -23,3 +23,6 @@ msra_ner_cn_path = os.path.join(NER, 'MSRA_NER')
 resume_ner_path = '/home/ws/data/ResumeNER'
 weibo_ner_path = os.path.join(NER, 'Weibo_NER')
 demo_ner_path = os.path.join(NER, 'Demo_NER')
+
+if __name__ == '__main__':
+    print(charinfo)

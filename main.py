@@ -142,7 +142,7 @@ parser.add_argument('--embed_dropout_pos', default='0')
 parser.add_argument('--abs_pos_fusion_func', default='nonlinear_add',
                     choices=['add', 'concat', 'nonlinear_concat', 'nonlinear_add', 'concat_nonlinear', 'add_nonlinear'])
 
-parser.add_argument('--dataset', default='weibo', help='weibo|resume|ontonotes|msra')
+parser.add_argument('--dataset', default='demo', help='weibo|resume|ontonotes|msra')
 parser.add_argument('--label', default='all', help='ne|nm|all')
 
 args = parser.parse_args()
@@ -175,14 +175,17 @@ if args.device != 'cpu':
 else:
     device = torch.device('cpu')
 
+device = None  # in order to run on macbook
 refresh_data = False
 # import random
 # print('**'*12,random.random,'**'*12)
 
 
-
 for k, v in args.__dict__.items():
     print_info('{}:{}'.format(k, v))
+
+###################################### para setting ######################################
+
 
 raw_dataset_cache_name = os.path.join('cache', args.dataset +
                                       '_trainClip:{}'.format(args.train_clip)
@@ -237,13 +240,13 @@ elif args.dataset == 'msra':
                                                    )
 elif args.dataset == 'demo':
     datasets, vocabs, embeddings = load_demo(demo_ner_path, yangjie_rich_pretrain_unigram_path,
-                                                   yangjie_rich_pretrain_bigram_path,
-                                                   _refresh=refresh_data, index_token=False, train_clip=args.train_clip,
-                                                   _cache_fp=raw_dataset_cache_name,
-                                                   char_min_freq=args.char_min_freq,
-                                                   bigram_min_freq=args.bigram_min_freq,
-                                                   only_train_min_freq=args.only_train_min_freq
-                                                   )
+                                             yangjie_rich_pretrain_bigram_path,
+                                             _refresh=refresh_data, index_token=False, train_clip=args.train_clip,
+                                             _cache_fp=raw_dataset_cache_name,
+                                             char_min_freq=args.char_min_freq,
+                                             bigram_min_freq=args.bigram_min_freq,
+                                             only_train_min_freq=args.only_train_min_freq
+                                             )
 if args.gaz_dropout < 0:
     args.gaz_dropout = args.embed_dropout
 
@@ -319,12 +322,14 @@ elif args.dataset == 'weibo':
     args.momentum = 0.9
     args.epoch = 50
 
+###################################### datasets setting ######################################
+
 print('用的词表的路径:{}'.format(yangjie_rich_pretrain_word_path))
 
 w_list = load_yangjie_rich_pretrain_word_list(yangjie_rich_pretrain_word_path,
                                               _refresh=refresh_data,
                                               _cache_fp='cache/{}'.format(args.lexicon_name))
-
+# w_list就是一个词表
 cache_name = os.path.join('cache', (args.dataset + '_lattice' + '_only_train:{}' +
                                     '_trainClip:{}' + '_norm_num:{}'
                                     + 'char_min_freq{}' + 'bigram_min_freq{}' + 'word_min_freq{}' + 'only_train_min_freq{}'
@@ -346,7 +351,11 @@ datasets, vocabs, embeddings = equip_chinese_ner_with_lexicon(datasets, vocabs, 
                                                               number_normalized=args.number_normalized,
                                                               lattice_min_freq=args.lattice_min_freq,
                                                               only_train_min_freq=args.only_train_min_freq)
+# equip_chinese_ner_with_lexicon返回三个东西：datasets, vocabs, embeddings
+"""
+其中，datasets是一个字典，包含train和test两个键，每一个键都对应一个<class 'fastNLP.core.dataset.DataSet'>
 
+"""
 max_seq_len = max(*map(lambda x: max(x['seq_len']), datasets.values()))
 
 for k, v in datasets.items():
@@ -418,6 +427,7 @@ with torch.no_grad():
     print_info('{}init pram{}'.format('*' * 15, '*' * 15))
 
 loss = LossInForward()
+print("finish sentences: loss = LossInForward()")
 encoding_type = 'bmeso'
 if args.dataset == 'weibo' or args.dataset == 'tc':
     encoding_type = 'bio'
