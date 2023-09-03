@@ -28,4 +28,4 @@ python main.py --dataset demo
 
 不过这个自己做的数据集总是会报错说``Invalid instance which ends at line:xxx has been dropped``
 
-得想办法处理一下
+找了找，应该是数据集的问题，数据集中有爬取的时候没处理好的nbsp文件，把数据集处理一下就好了
